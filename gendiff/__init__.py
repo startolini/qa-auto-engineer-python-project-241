@@ -1,30 +1,26 @@
+from gendiff.formatters import stylish
 from gendiff.parser import parse
 
 
-def generate_diff(file_path1, file_path2):
-    data1 = parse(file_path1)
-    data2 = parse(file_path2)
-
+def build_diff(data1, data2):
     keys = sorted(data1.keys() | data2.keys())
-    lines = []
-
+    diff = []
     for key in keys:
         if key not in data2:
-            lines.append(f'  - {key}: {format_value(data1[key])}')
+            diff.append((key, 'removed', data1[key], None))
         elif key not in data1:
-            lines.append(f'  + {key}: {format_value(data2[key])}')
+            diff.append((key, 'added', None, data2[key]))
         elif data1[key] == data2[key]:
-            lines.append(f'    {key}: {format_value(data1[key])}')
+            diff.append((key, 'unchanged', data1[key], None))
         else:
-            lines.append(f'  - {key}: {format_value(data1[key])}')
-            lines.append(f'  + {key}: {format_value(data2[key])}')
-
-    return '{{\n{}\n}}'.format('\n'.join(lines))
+            diff.append((key, 'changed', data1[key], data2[key]))
+    return diff
 
 
-def format_value(value):
-    if isinstance(value, bool):
-        return str(value).lower()
-    if value is None:
-        return 'null'
-    return value
+def generate_diff(file_path1, file_path2, formatter='stylish'):
+    data1 = parse(file_path1)
+    data2 = parse(file_path2)
+    diff = build_diff(data1, data2)
+    if formatter == 'stylish':
+        return stylish.render(diff)
+    raise ValueError(f'Unknown formatter: {formatter}')
