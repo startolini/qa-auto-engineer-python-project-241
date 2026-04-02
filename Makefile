@@ -1,5 +1,5 @@
 install:
-	uv sync
+	uv cache clean && uv tool install . --force
 
 lint:
 	uv run ruff check gendiff tests
