@@ -7,4 +7,7 @@ lint:
 test:
 	uv run pytest
 
-.PHONY: install lint test
+check:
+	make lint
+
+.PHONY: install lint test check
