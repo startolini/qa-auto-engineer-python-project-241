@@ -13,8 +13,8 @@ def main():
         '-f', '--format', metavar='FORMAT', help='set format of output'
     )
     args = parser.parse_args()
-
-    print(generate_diff(args.first_file, args.second_file, args.format or 'stylish'))
+    fmt = args.format or 'stylish'
+    print(generate_diff(args.first_file, args.second_file, fmt))
 
 
 if __name__ == '__main__':
